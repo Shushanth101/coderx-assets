@@ -1,6 +1,6 @@
 # 🚀 CoderX Problem Assets & Community Contributions
 
-Welcome to **`coderx-assets`**, the official community contribution repository for **CoderX** ([coderX](https://coderx-two.vercel.app/)).
+Welcome to **`coderx-assets`**, the official community contribution repository for [**coderX**](https://coderx-two.vercel.app/).
 
 CoderX is an in-browser interactive coding platform powered by StackBlitz WebContainers. Learners practice real React, Express, and full-stack MERN development right in their browser without installing local dependencies or Docker containers.
 
@@ -103,9 +103,9 @@ files/
 ### 2. `express` (Single-repo Express)
 ```
 files/
-├── src/app.js               (Express app definition)       [readOnly: false]
-├── src/server.js            (Server listener)              [readOnly: true]
-└── tests/server.test.js     (Supertest test suite)         [readOnly: true]
+├── app.js               (Express app definition)       [readOnly: false]
+├── server.js            (Server listener)              [readOnly: true]
+└── app.test.js     (Supertest test suite)         [readOnly: true]
 ```
 
 ---
@@ -117,17 +117,17 @@ For full-stack challenges, the workspace root is divided into **two top-level fo
 ```
 files/
 ├── frontend/
-│   ├── index.html           (Vite HTML entry)              [readOnly: true]
+│   ├── index.html           (Vite HTML entry optional)              [readOnly: true]
 │   ├── src/
 │   │   ├── main.jsx         (React mounting script)        [readOnly: true]
 │   │   ├── App.jsx          (Main frontend component)      [readOnly: false]
-│   │   └── SeatBooking.jsx  (Frontend subcomponents)       [readOnly: false]
+│   │   └── SeatBooking.jsx  (Frontend subcomponents [you can also create components directory outside src folder])       [readOnly: false]
 │   └── __tests__/
 │       └── App.test.jsx     (Frontend Vitest test suite)   [readOnly: true]
 │
 └── backend/
     ├── app.js               (Express app instance)         [readOnly: false]
-    ├── index.js             (Server listener port 4000)    [readOnly: true]
+    ├── index.js             (Server listener port 3000 or any)    [readOnly: true]
     ├── routes/
     │   └── seats.js         (API endpoint router)          [readOnly: false]
     ├── store/
