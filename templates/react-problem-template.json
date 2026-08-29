@@ -1,0 +1,28 @@
+{
+  "title": "Sample React Challenge",
+  "description": "## Problem Statement\nDescribe your React challenge here...",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "components"
+  ],
+  "total_tests": 1,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React from 'react';\n\nfunction App() {\n  return (\n    <div>\n      <h1>Hello CoderX</h1>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\ndescribe('Sample React Challenge', () => {\n  test('Renders <h1> with \"Hello CoderX\"', async () => {\n    const { container: root } = render(<App />);\n    const h1 = root.querySelector('h1');\n    if (!h1) throw new Error('No <h1> element found');\n    if (!h1.textContent.includes('Hello CoderX')) {\n      throw new Error('Heading text must contain \"Hello CoderX\"');\n    }\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

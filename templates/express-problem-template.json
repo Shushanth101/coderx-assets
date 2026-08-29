@@ -1,0 +1,28 @@
+{
+  "title": "Sample Express Routing Challenge",
+  "description": "## Problem Statement\nBuild a GET /api/health endpoint in Express...",
+  "difficulty": "easy",
+  "tags": [
+    "express",
+    "routing"
+  ],
+  "total_tests": 1,
+  "stack_type": "express",
+  "files": {
+    "src/app.js": {
+      "contents": "const express = require('express');\nconst app = express();\n\napp.use(express.json());\n\napp.get('/api/health', (req, res) => {\n  res.json({ status: 'ok' });\n});\n\nmodule.exports = app;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/server.js": {
+      "contents": "const app = require('./app');\nconst PORT = process.env.PORT || 3000;\n\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/server.test.js": {
+      "contents": "const request = require('supertest');\nconst { describe, test, expect } = require('vitest');\nconst app = require('../src/app');\n\ndescribe('GET /api/health', () => {\n  test('returns 200 OK with status ok', async () => {\n    const res = await request(app).get('/api/health');\n    if (res.status !== 200) throw new Error(`Expected status 200 but got ${res.status}`);\n    if (res.body.status !== 'ok') throw new Error(`Expected { status: 'ok' }`);\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

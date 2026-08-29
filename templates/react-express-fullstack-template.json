@@ -1,0 +1,46 @@
+{
+  "title": "Full-Stack Seat Booking Reservation Bug",
+  "description": "## Problem Statement\nFix the concurrency bug in the Express backend seat reservation endpoint...",
+  "difficulty": "hard",
+  "tags": [
+    "react",
+    "express",
+    "fullstack",
+    "concurrency",
+    "rest-api"
+  ],
+  "total_tests": 4,
+  "stack_type": "react-express",
+  "files": {
+    "frontend/index.html": {
+      "contents": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>CineSeat — Book Your Show</title>\n  </head>\n  <body>\n    <div id=\"root\"></div>\n    <script type=\"module\" src=\"/src/main.jsx\"></script>\n  </body>\n</html>\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "frontend/src/main.jsx": {
+      "contents": "import { StrictMode } from 'react';\nimport { createRoot } from 'react-dom/client';\nimport App from './App.jsx';\n\ncreateRoot(document.getElementById('root')).render(\n  <StrictMode>\n    <App />\n  </StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "frontend/src/App.jsx": {
+      "contents": "import React, { useEffect, useState } from 'react';\n\nfunction App() {\n  const [seats, setSeats] = useState([]);\n\n  useEffect(() => {\n    fetch('/api/seats')\n      .then(res => res.json())\n      .then(data => setSeats(data));\n  }, []);\n\n  return (\n    <div>\n      <h1>🎬 CineSeat Booking</h1>\n      <div className=\"grid\">\n        {seats.map(seat => (\n          <div key={seat.id}>{seat.id} - {seat.status}</div>\n        ))}\n      </div>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "backend/app.js": {
+      "contents": "import express from 'express';\n\nconst app = express();\napp.use(express.json());\n\nconst seats = [{ id: 1, status: 'available' }];\n\napp.get('/api/seats', (req, res) => {\n  res.json(seats);\n});\n\napp.post('/api/seats/:id/book', (req, res) => {\n  const seat = seats.find(s => s.id === Number(req.params.id));\n  if (!seat) return res.status(404).json({ error: 'Not found' });\n  if (seat.status === 'booked') return res.status(409).json({ error: 'Already booked' });\n  seat.status = 'booked';\n  res.json(seat);\n});\n\nexport default app;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "backend/index.js": {
+      "contents": "import app from './app.js';\nconst PORT = process.env.PORT || 4000;\napp.listen(PORT, () => console.log(`Backend running on port ${PORT}`));\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "backend/__tests__/concurrency.test.js": {
+      "contents": "import request from 'supertest';\nimport app from '../app.js';\nimport { describe, test, expect } from 'vitest';\n\ndescribe('Full-Stack Seat Booking Test Suite', () => {\n  test('prevents double booking under concurrent requests', async () => {\n    const [res1, res2] = await Promise.all([\n      request(app).post('/api/seats/1/book').send({ userId: 'user-A' }),\n      request(app).post('/api/seats/1/book').send({ userId: 'user-B' }),\n    ]);\n    const statuses = [res1.status, res2.status].sort();\n    expect(statuses).toEqual([200, 409]);\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}
