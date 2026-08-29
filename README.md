@@ -1,6 +1,6 @@
 # 🚀 CoderX Problem Assets & Community Contributions
 
-Welcome to **`coderx-assets`**, the official community contribution repository for **CoderX** ([coderx.dev](https://coderx-two.vercel.app/)).
+Welcome to **`coderx-assets`**, the official community contribution repository for **CoderX** ([coderX](https://coderx-two.vercel.app/)).
 
 CoderX is an in-browser interactive coding platform powered by StackBlitz WebContainers. Learners practice real React, Express, and full-stack MERN development right in their browser without installing local dependencies or Docker containers.
 
