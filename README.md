@@ -38,7 +38,9 @@ Try out CoderX live at: **[https://coderx-two.vercel.app/](https://coderx-two.ve
 
 ---
 
-## 🤝 How to Contribute New Challenges
+## 🤝 How to Contribute
+* 🎨 **For UI and UX Enhancements / Feature Requests:** Please create a **GitHub Issue**.
+* 💡 **For Introducing New Problem Challenges:** Please create a **Pull Request (PR)** with your problem `.json` file.
 
 To submit new problem challenges, create JSON problem files, or view detailed workspace folder structures and test specifications:
 

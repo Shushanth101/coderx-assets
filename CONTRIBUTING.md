@@ -182,6 +182,12 @@ test('GET /api/health returns 200 OK', async () => {
 
 ---
 
+## 📌 Contribution Guidelines
+* **UI and UX Enhancements / Bug Reports**: Please create a **GitHub Issue** detailing your suggestion, bug report, or visual improvement ideas.
+* **Introducing New Problem Challenges**: Please create a **Pull Request (PR)** containing your new problem `.json` file inside the `problems/` directory.
+---
+
+
 ## 🤝 Step-by-Step Contribution Workflow
 
 1. **Fork this repository (`coderx-assets`)** on GitHub.
