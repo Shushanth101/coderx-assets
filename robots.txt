@@ -1,4 +1,0 @@
-# Allow all bots and crawlers (including AI/LLM search engines and agents) full access to the site.
-User-agent: *
-Allow: /
-Disallow:
