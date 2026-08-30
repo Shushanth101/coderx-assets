@@ -1,0 +1,30 @@
+{
+  "title": "useReducer",
+  "description": "## useReducer\n\nWhen state updates get tangled — multiple related fields, transitions that depend on the previous state, or the same update logic scattered across handlers — `useReducer` centralizes everything into a single **reducer function**.\n\n### Shape\n```jsx\nconst [state, dispatch] = useReducer(reducer, initialState);\n\nfunction reducer(state, action) {\n  switch (action.type) {\n    case 'SET_X': return { ...state, x: action.payload };\n    default: return state;\n  }\n}\n\ndispatch({ type: 'SET_X', payload: 42 });\n```\n\nA reducer is a **pure function**: given the same state + action, it always returns the same next state. No side effects, no mutation.\n\n### Your Task\nRebuild the counter from chapter 3 with `useReducer`:\n1. Initial state: `{ count: 0 }`\n2. Handle action types: `'INCREMENT'`, `'DECREMENT'`, `'RESET'`\n3. Display count in `<h2 id=\"count\">`\n4. Buttons `#increment`, `#decrement`, `#reset` dispatch the matching action\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "usereducer-hook",
+    "reducer-pattern",
+    "action-dispatching"
+  ],
+  "total_tests": 4,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction reducer(state, action) {\n  // Handle INCREMENT, DECREMENT, RESET\n  return state;\n}\n\nfunction App() {\n  // const [state, dispatch] = useReducer(reducer, { count: 0 });\n\n  return (\n    <div>\n      <h2 id=\"count\">Count: 0</h2>\n      {/* Add buttons */}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('useReducer', () => {\n  test('Displays initial count of 0', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#count');\nif (!el) throw new Error('No element with id \"count\" found');\nif (!el.textContent.includes('0')) throw new Error('Initial count should be 0');\n  });\n\n  test('INCREMENT raises count by 1', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#increment');\nif (!btn) throw new Error('No button with id \"increment\" found');\nconst before = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [0])[0]);\nbtn.click();\nawait tick();\nconst after = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [0])[0]);\nif (after !== before + 1) throw new Error('Count should increase by 1 (was ' + before + ', now ' + after + ')');\n  });\n\n  test('DECREMENT lowers count by 1', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#decrement');\nif (!btn) throw new Error('No button with id \"decrement\" found');\nconst before = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [0])[0]);\nbtn.click();\nawait tick();\nconst after = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [0])[0]);\nif (after !== before - 1) throw new Error('Count should decrease by 1 (was ' + before + ', now ' + after + ')');\n  });\n\n  test('RESET sets count back to 0', async () => {\n    const { container: root } = render(<App />);\n    const inc = root.querySelector('#increment');\nconst reset = root.querySelector('#reset');\nif (!reset) throw new Error('No button with id \"reset\" found');\nif (inc) { inc.click(); await tick(); inc.click(); await tick(); }\nreset.click();\nawait tick();\nconst after = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [NaN])[0]);\nif (after !== 0) throw new Error('Count should be 0 after RESET (was ' + after + ')');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "Forms & Controlled Components",
+  "description": "## Forms & Controlled Components\n\nIn React, form elements like `<input>`, `<textarea>`, and `<select>` can be **controlled** — their value is driven by React state.\n\n### Pattern\n```jsx\nconst [name, setName] = useState('');\n<input value={name} onChange={(e) => setName(e.target.value)} />\n```\n\n### Your Task\nBuild a registration form:\n1. A text input for **name** with id `\"name-input\"`\n2. An **email** input with id `\"email-input\"`\n3. A `<select>` for **role** with id `\"role-select\"` and options: `\"student\"`, `\"developer\"`, `\"designer\"`\n4. A **submit button** with id `\"submit-btn\"`\n5. All inputs must be **controlled** (value + onChange)\n6. On submit, **prevent page reload** and show a `<div id=\"summary\">` displaying: **\"Name: [name], Email: [email], Role: [role]\"**\n7. The summary should only appear after submission\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "controlled-inputs",
+    "form-submission",
+    "select-textarea",
+    "preventdefault"
+  ],
+  "total_tests": 5,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [name, setName] = useState('');\n  const [email, setEmail] = useState('');\n  const [role, setRole] = useState('student');\n  const [submitted, setSubmitted] = useState(false);\n\n  const handleSubmit = (e) => {\n    // Handle form submission\n  };\n\n  return (\n    <form onSubmit={handleSubmit}>\n      {/* Build your form */}\n    </form>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Forms & Controlled Components', () => {\n  test('Has name, email inputs and role select', async () => {\n    const { container: root } = render(<App />);\n    if (!root.querySelector('#name-input')) throw new Error('Missing #name-input');\nif (!root.querySelector('#email-input')) throw new Error('Missing #email-input');\nif (!root.querySelector('#role-select')) throw new Error('Missing #role-select');\n  });\n\n  test('Name input is controlled', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#name-input');\nconst nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nnativeInputValueSetter.call(input, 'Alice');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nif (input.value !== 'Alice') throw new Error('Input should be controlled and reflect typed value');\n  });\n\n  test('Summary not shown before submission', async () => {\n    const { container: root } = render(<App />);\n    const summary = root.querySelector('#summary');\nif (summary) throw new Error('Summary should not be visible before submission');\n  });\n\n  test('Submitting form shows summary', async () => {\n    const { container: root } = render(<App />);\n    const nameInput = root.querySelector('#name-input');\nconst emailInput = root.querySelector('#email-input');\nconst nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nnativeSetter.call(nameInput, 'Alice');\nnameInput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nnativeSetter.call(emailInput, 'alice@test.com');\nemailInput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nconst btn = root.querySelector('#submit-btn');\nconst form = btn.closest('form');\nif (!form) throw new Error('Submit button should be inside a <form>');\nform.noValidate = true;\nbtn.click();\nawait tick();\nawait tick();\nconst summary = root.querySelector('#summary');\nif (!summary) throw new Error('Summary should appear after submit');\nif (!summary.textContent.includes('Alice')) throw new Error('Summary should include the name');\nif (!summary.textContent.includes('alice@test.com')) throw new Error('Summary should include the email');\n  });\n\n  test('Role select has correct options', async () => {\n    const { container: root } = render(<App />);\n    const select = root.querySelector('#role-select');\nconst options = select.querySelectorAll('option');\nconst values = Array.from(options).map(o => o.value);\nif (!values.includes('student')) throw new Error('Missing \"student\" option');\nif (!values.includes('developer')) throw new Error('Missing \"developer\" option');\nif (!values.includes('designer')) throw new Error('Missing \"designer\" option');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

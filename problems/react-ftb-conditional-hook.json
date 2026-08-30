@@ -1,0 +1,29 @@
+{
+  "title": "The Conditional Hook",
+  "description": "## Fix the Bug: The Conditional Hook\n\nThis profile component has a \"Show Details\" toggle. When details are shown, additional info is displayed. But toggling it crashes the entire app with a hooks error.\n\n### Symptoms\n- Initial render works fine\n- Clicking \"Show Details\" crashes the app\n- Error: \"Rendered more hooks than during the previous render\"\n\n### Your Task\nFix the code so that:\n- Toggling \"Show Details\" works without crashing\n- When checked, shows the detail fields\n- When unchecked, hides them\n- All hooks must follow the Rules of Hooks\n\n> **Think about it:** What is the #1 rule of React Hooks?\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "rules-of-hooks",
+    "conditional-rendering"
+  ],
+  "total_tests": 5,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [showDetails, setShowDetails] = useState(false);\n  const [name] = useState('Alice');\n\n  if (showDetails) {\n    const [bio] = useState('React developer from NYC');\n    const [joined] = useState('January 2025');\n  }\n\n  return (\n    <div>\n      <h2 id=\"name\">{name}</h2>\n      <label>\n        <input\n          id=\"toggle\"\n          type=\"checkbox\"\n          checked={showDetails}\n          onChange={(e) => setShowDetails(e.target.checked)}\n        />\n        Show Details\n      </label>\n      {showDetails && (\n        <div id=\"details\">\n          <p id=\"bio\">Bio: React developer from NYC</p>\n          <p id=\"joined\">Joined: January 2025</p>\n        </div>\n      )}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Conditional Hook', () => {\n  test('Renders name without crashing', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#name');\nif (!el) throw new Error('No #name element');\nif (!el.textContent.includes('Alice')) throw new Error('Should show \"Alice\"');\n  });\n\n  test('Details hidden initially', async () => {\n    const { container: root } = render(<App />);\n    const details = root.querySelector('#details');\nif (details) throw new Error('Details should be hidden initially');\n  });\n\n  test('Toggling checkbox shows details', async () => {\n    const { container: root } = render(<App />);\n    const toggle = root.querySelector('#toggle');\nif (!toggle) throw new Error('No #toggle checkbox');\ntoggle.click();\nconst details = root.querySelector('#details');\nif (!details) throw new Error('Details should be visible after toggle');\n  });\n\n  test('Details show bio and joined date', async () => {\n    const { container: root } = render(<App />);\n    const bio = root.querySelector('#bio');\nconst joined = root.querySelector('#joined');\nif (!bio || !bio.textContent.includes('React developer'))\n  throw new Error('Bio should contain \"React developer\"');\nif (!joined || !joined.textContent.includes('January 2025'))\n  throw new Error('Joined should contain \"January 2025\"');\n  });\n\n  test('Can toggle details off and on again', async () => {\n    const { container: root } = render(<App />);\n    const toggle = root.querySelector('#toggle');\ntoggle.click();\nconst details = root.querySelector('#details');\nif (details) throw new Error('Details should hide when unchecked');\ntoggle.click();\nconst detailsAgain = root.querySelector('#details');\nif (!detailsAgain) throw new Error('Details should show again');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

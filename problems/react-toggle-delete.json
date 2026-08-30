@@ -1,0 +1,27 @@
+{
+  "title": "Toggle & Delete",
+  "description": "## Step 2: Toggle & Delete\n\nNow make todos interactive. Each `<li>` needs:\n\n### Requirements\n1. A checkbox with class **`\"toggle\"`** that flips a `done` flag on the todo\n2. When done, the `<li>` should have class **`\"done\"`** (you can style it later)\n3. A delete button with class **`\"delete\"`** and text \"×\" that removes that todo\n4. Keep the existing add behavior working\n        ",
+  "difficulty": "easy",
+  "tags": [
+    "react"
+  ],
+  "total_tests": 2,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [todos, setTodos] = useState([]);\n  const [text, setText] = useState('');\n\n  const add = () => {\n    const t = text.trim();\n    if (!t) return;\n    setTodos([...todos, { id: Date.now() + Math.random(), text: t, done: false }]);\n    setText('');\n  };\n\n  // Add toggle and remove functions\n\n  return (\n    <div>\n      <input\n        id=\"new-todo\"\n        value={text}\n        onChange={(e) => setText(e.target.value)}\n        placeholder=\"What needs doing?\"\n      />\n      <button id=\"add\" onClick={add}>Add</button>\n      <ul id=\"todos\">\n        {todos.map((todo) => (\n          <li key={todo.id}>{todo.text}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Toggle & Delete', () => {\n  test('Toggling a todo adds the \"done\" class to its <li>', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#new-todo');\nconst add = root.querySelector('#add');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(input, 'Buy milk');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nadd.click();\nawait tick();\nconst toggle = root.querySelector('#todos li .toggle');\nif (!toggle) throw new Error('Missing .toggle checkbox in todo item');\ntoggle.click();\nawait tick();\nconst li = root.querySelector('#todos li');\nif (!li.className.includes('done')) throw new Error('Toggled todo should have class \"done\"');\ntoggle.click();\nawait tick();\nif (root.querySelector('#todos li').className.includes('done'))\n  throw new Error('Toggling again should remove the \"done\" class');\n  });\n\n  test('Delete button removes only its own todo', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#new-todo');\nconst add = root.querySelector('#add');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(input, 'Second');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nadd.click();\nawait tick();\nconst before = root.querySelectorAll('#todos li').length;\nconst firstDelete = root.querySelector('#todos li .delete');\nif (!firstDelete) throw new Error('Missing .delete button in todo item');\nfirstDelete.click();\nawait tick();\nconst after = root.querySelectorAll('#todos li').length;\nif (after !== before - 1)\n  throw new Error('Delete should remove exactly one todo (was ' + before + ', now ' + after + ')');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "title": "The Stale Closure",
+  "description": "## Fix the Bug: The Stale Closure\n\nThis counter has an \"Add 3\" button that calls `increment()` three times in a row. You'd expect the count to go up by 3, but it only goes up by 1.\n\n### Symptoms\n- Single \"Increment\" click works (adds 1)\n- \"Add 3\" button only adds 1 instead of 3\n- The three calls seem to \"overwrite\" each other\n\n### Your Task\nFix the `increment` function so that calling it 3 times actually adds 3.\n\n> **Think about it:** When `increment` runs, what value of `count` does it see?\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "closures",
+    "functional-updates"
+  ],
+  "total_tests": 3,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  const increment = () => {\n    setCount(count + 1);\n  };\n\n  const addThree = () => {\n    increment();\n    increment();\n    increment();\n  };\n\n  return (\n    <div>\n      <h2 id=\"count\">Count: {count}</h2>\n      <button id=\"increment\" onClick={increment}>Increment</button>\n      <button id=\"add-three\" onClick={addThree}>Add 3</button>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Stale Closure', () => {\n  test('Starts at 0', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#count');\nif (!el.textContent.includes('0')) throw new Error('Should start at 0');\n  });\n\n  test('Single increment adds 1', async () => {\n    const { container: root } = render(<App />);\n    root.querySelector('#increment').click();\nawait tick();\nconst el = root.querySelector('#count');\nif (!el.textContent.includes('1')) throw new Error('Should be 1 after one increment');\n  });\n\n  test('\"Add 3\" button adds exactly 3', async () => {\n    const { container: root } = render(<App />);\n    root.querySelector('#add-three').click();\nawait tick();\nconst el = root.querySelector('#count');\nif (!el.textContent.includes('4')) throw new Error('Should be 4 (1 + 3), got: ' + el.textContent);\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

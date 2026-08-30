@@ -1,0 +1,30 @@
+{
+  "title": "The Lost Increment",
+  "description": "## Fix the Bug: The Lost Increment\n\nThe component has two ways to add 1 to the count: a synchronous **+** button, and a **Delayed +** button that adds 1 after 200ms.\n\nThe bug: the delayed callback captures `count` at the moment it was scheduled. By the time it runs, the real count has moved on — but the callback still computes `oldCount + 1` and overwrites everything.\n\n### Symptoms\n- Start at 0\n- Click **Delayed +** (queues \"set to 0 + 1 = 1\" for 200ms later)\n- Click **+** immediately (count becomes 1)\n- 200ms later: count goes back to 1 instead of becoming 2\n\n### Your Task\nMake every `+` truly add 1, no matter what else happened while the timer was pending.\n\n> **Think about it:** `setCount(count + 1)` reads `count` from the closure. `setCount(prev => prev + 1)` reads from the **latest** state at update time.\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "stale-closures",
+    "functional-updaters",
+    "setstate-with-previous-state"
+  ],
+  "total_tests": 3,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  const delayedAdd = () => {\n    setTimeout(() => {\n      setCount(count + 1);\n    }, 200);\n  };\n\n  return (\n    <div>\n      <p id=\"count\">Count: {count}</p>\n      <button id=\"inc\" onClick={() => setCount(count + 1)}>+</button>\n      <button id=\"delayed\" onClick={delayedAdd}>Delayed +</button>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Lost Increment', () => {\n  test('Renders count and both buttons', async () => {\n    const { container: root } = render(<App />);\n    if (!root.querySelector('#count')) throw new Error('No #count found');\nif (!root.querySelector('#inc')) throw new Error('No #inc button found');\nif (!root.querySelector('#delayed')) throw new Error('No #delayed button found');\n  });\n\n  test('Delayed + and immediate + both land', async () => {\n    const { container: root } = render(<App />);\n    root.querySelector('#delayed').click();\nroot.querySelector('#inc').click();\nawait tick();\nawait new Promise(r => setTimeout(r, 350));\nconst text = root.querySelector('#count').textContent;\nconst n = Number((text.match(/-?\\d+/) || [NaN])[0]);\nif (n !== 2)\n  throw new Error('Expected count = 2 (1 from + and 1 from Delayed +), got ' + n);\n  });\n\n  test('Two delayed clicks both land', async () => {\n    const { container: root } = render(<App />);\n    // Current count is 2 from previous test (state persists across tests)\nconst before = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [NaN])[0]);\nroot.querySelector('#delayed').click();\nroot.querySelector('#delayed').click();\nawait tick();\nawait new Promise(r => setTimeout(r, 400));\nconst after = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [NaN])[0]);\nif (after !== before + 2)\n  throw new Error('Two Delayed + clicks should add 2, went from ' + before + ' to ' + after);\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

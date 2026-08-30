@@ -1,0 +1,31 @@
+{
+  "title": "Lists & Keys",
+  "description": "## Lists & Keys\n\nTo render a list of items, use `Array.map()` to transform data into JSX elements.\n\n### The key prop\nReact needs a unique `key` for each item in a list so it can efficiently update the DOM:\n```jsx\n{items.map(item => (\n  <li key={item.id}>{item.text}</li>\n))}\n```\n\n> **Important:** Never use array index as a key if the list can be reordered or filtered. Use a stable unique ID instead.\n\n### Your Task\nGiven this data:\n```js\nconst todos = [\n  { id: 1, text: 'Learn React', done: true },\n  { id: 2, text: 'Build a project', done: false },\n  { id: 3, text: 'Deploy to production', done: false },\n];\n```\n\n1. Render all todos in a `<ul id=\"todo-list\">`\n2. Each `<li>` should have `data-id={todo.id}` and display the text\n3. Completed todos should have `className=\"done\"`\n4. Add a button with id `\"filter-btn\"` that toggles between showing **all** and **active only** (not done)\n5. Add a `<span id=\"count\">` showing the number of visible items\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "array-map-",
+    "key-prop",
+    "filtering-lists",
+    "unique-identifiers"
+  ],
+  "total_tests": 5,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const todos = [\n    { id: 1, text: 'Learn React', done: true },\n    { id: 2, text: 'Build a project', done: false },\n    { id: 3, text: 'Deploy to production', done: false },\n  ];\n\n  const [showAll, setShowAll] = useState(true);\n\n  return (\n    <div>\n      {/* Render your list here */}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Lists & Keys', () => {\n  test('Initially renders all 3 todos', async () => {\n    const { container: root } = render(<App />);\n    const items = root.querySelectorAll('#todo-list li');\nif (items.length !== 3) throw new Error('Expected 3 items, found ' + items.length);\n  });\n\n  test('Each <li> has a data-id attribute', async () => {\n    const { container: root } = render(<App />);\n    const items = root.querySelectorAll('#todo-list li');\nitems.forEach(li => {\n  if (!li.getAttribute('data-id')) throw new Error('Each <li> must have a data-id attribute');\n});\n  });\n\n  test('Completed todo has className \"done\"', async () => {\n    const { container: root } = render(<App />);\n    const doneItem = root.querySelector('#todo-list li[data-id=\"1\"]');\nif (!doneItem) throw new Error('No li with data-id=\"1\"');\nif (!doneItem.classList.contains('done'))\n  throw new Error('Completed todo should have class \"done\"');\n  });\n\n  test('Filter button shows only active todos', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#filter-btn');\nif (!btn) throw new Error('No #filter-btn found');\nbtn.click();\nawait tick();\nconst items = root.querySelectorAll('#todo-list li');\nif (items.length !== 2) throw new Error('Expected 2 active items, found ' + items.length);\n  });\n\n  test('Count shows number of visible items', async () => {\n    const { container: root } = render(<App />);\n    const count = root.querySelector('#count');\nif (!count) throw new Error('No #count element');\nif (!count.textContent.includes('2')) throw new Error('Count should show 2 after filtering');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

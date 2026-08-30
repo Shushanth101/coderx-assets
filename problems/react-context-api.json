@@ -1,0 +1,31 @@
+{
+  "title": "Context API",
+  "description": "## Context API\n\nWhen data needs to be accessed by many components at different nesting levels, **Context** lets you pass it without threading props through every level.\n\n### How It Works\n```jsx\n// 1. Create context\nconst ThemeContext = createContext('light');\n\n// 2. Provide value at top level\n<ThemeContext.Provider value=\"dark\">\n  <App />\n</ThemeContext.Provider>\n\n// 3. Consume anywhere below\nfunction Button() {\n  const theme = useContext(ThemeContext);\n  return <button className={theme}>Click</button>;\n}\n```\n\n### Your Task\nBuild a theme switcher using Context:\n1. Create a `ThemeContext` using `createContext`\n2. In `App`, track `theme` state (`\"light\"` or `\"dark\"`), starting with **\"light\"**\n3. Wrap children in `ThemeContext.Provider` with value `{ theme, toggleTheme }`\n4. Create a `ThemeDisplay` component that:\n   - Uses `useContext(ThemeContext)` to read the theme\n   - Renders `<div id=\"theme-display\">` with text **\"Current theme: light\"** or **\"dark\"**\n   - Renders a button with id `\"toggle-btn\"` that calls `toggleTheme`\n5. `ThemeDisplay` must NOT receive theme as a prop — it must use Context\n\n> The key idea: ThemeDisplay reads the theme from Context, not from props.\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "createcontext",
+    "usecontext",
+    "provider",
+    "avoiding-prop-drilling"
+  ],
+  "total_tests": 4,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nconst ThemeContext = createContext();\n\nfunction ThemeDisplay() {\n  // Use context here to get theme and toggleTheme\n  return (\n    <div id=\"theme-display\">\n      {/* Display theme and toggle button */}\n    </div>\n  );\n}\n\nfunction App() {\n  const [theme, setTheme] = useState('light');\n\n  const toggleTheme = () => {\n    setTheme(theme === 'light' ? 'dark' : 'light');\n  };\n\n  return (\n    <div>\n      {/* Wrap ThemeDisplay with Provider */}\n      <ThemeDisplay />\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Context API', () => {\n  test('Initially displays \"Current theme: light\"', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#theme-display');\nif (!el) throw new Error('No #theme-display found');\nconst text = el.textContent;\nif (!text.includes('Current theme:') || !text.includes('light'))\n  throw new Error('Should show \"Current theme: light\" initially');\n  });\n\n  test('Toggle button switches to dark theme', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#toggle-btn');\nif (!btn) throw new Error('No #toggle-btn found');\nbtn.click();\nawait tick();\nconst el = root.querySelector('#theme-display');\nif (!el.textContent.includes('dark'))\n  throw new Error('Should show \"dark\" after toggling');\n  });\n\n  test('Toggling again returns to light', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#toggle-btn');\nbtn.click();\nawait tick();\nconst el = root.querySelector('#theme-display');\nif (!el.textContent.includes('light'))\n  throw new Error('Should show \"light\" after toggling back');\n  });\n\n  test('ThemeDisplay reads from Context (no theme prop)', async () => {\n    const { container: root } = render(<App />);\n    const display = root.querySelector('#theme-display');\nif (!display) throw new Error('No #theme-display');\nif (display.textContent.includes('undefined'))\n  throw new Error('Theme value is undefined — make sure you provide context value');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

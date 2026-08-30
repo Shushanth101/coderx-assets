@@ -1,0 +1,30 @@
+{
+  "title": "Error Boundaries",
+  "description": "## Error Boundaries\n\nA JavaScript error in a child component shouldn't take down your whole app. **Error boundaries** are special components that catch errors during rendering and show a fallback UI instead.\n\nThere's no hook equivalent yet — boundaries must be **class components** that implement at least one of:\n\n- `static getDerivedStateFromError(error)` — returns next state when a child throws\n- `componentDidCatch(error, info)` — for logging\n\n```jsx\nclass Boundary extends React.Component {\n  state = { hasError: false };\n  static getDerivedStateFromError() { return { hasError: true }; }\n  render() {\n    if (this.state.hasError) return <p>Something went wrong</p>;\n    return this.props.children;\n  }\n}\n```\n\n### Your Task\nBuild an error boundary that protects a buggy button:\n1. Define class `ErrorBoundary` with `hasError` state and `getDerivedStateFromError`\n2. When caught, render `<p id=\"error-fallback\">Something went wrong</p>`\n3. Otherwise, render `this.props.children`\n4. Wrap the provided `<BuggyButton />` in `<ErrorBoundary>`\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "error-boundaries",
+    "class-components",
+    "getderivedstatefromerror"
+  ],
+  "total_tests": 2,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\n// Build your ErrorBoundary class here\n\nfunction BuggyButton() {\n  const [crash, setCrash] = useState(false);\n  if (crash) throw new Error('Boom!');\n  return <button id=\"crash-btn\" onClick={() => setCrash(true)}>Crash</button>;\n}\n\nfunction App() {\n  return (\n    <div>\n      <BuggyButton />\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Error Boundaries', () => {\n  test('Renders the crash button initially', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#crash-btn');\nif (!btn) throw new Error('No button with id \"crash-btn\" found');\nconst fallback = root.querySelector('#error-fallback');\nif (fallback) throw new Error('Fallback should not render before the error');\n  });\n\n  test('Boundary shows fallback when child crashes', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#crash-btn');\nconst origError = console.error;\nconsole.error = () => {};\ntry {\n  btn.click();\n  await tick();\n  await tick();\n} finally {\n  console.error = origError;\n}\nconst fallback = root.querySelector('#error-fallback');\nif (!fallback) throw new Error('Expected fallback with id \"error-fallback\" after the crash');\nif (!fallback.textContent.includes('Something went wrong'))\n  throw new Error('Fallback should say \"Something went wrong\"');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

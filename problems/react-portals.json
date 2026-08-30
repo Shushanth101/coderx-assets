@@ -1,0 +1,30 @@
+{
+  "title": "Portals",
+  "description": "## Portals\n\nA portal renders a child into a **different DOM node** while keeping it in the React tree (state, events, context all still work).\n\n```jsx\nReactDOM.createPortal(\n  <div>I render somewhere else</div>,\n  document.body\n);\n```\n\nWhy? CSS. A parent with `overflow: hidden` or a stacking context will clip or trap your modal. Portaling out to `document.body` escapes that.\n\n### Your Task\nBuild an open/close modal that portals out of the app:\n1. Hold an `open` boolean state, initially `false`\n2. `<button id=\"open-modal\">` flips it to `true`\n3. When open, render a `Modal` component using `ReactDOM.createPortal` into `document.body`\n4. The modal contains:\n   - A container with id `\"modal\"`\n   - A `<button id=\"close-modal\">` that flips state back to `false`\n  ",
+  "difficulty": "hard",
+  "tags": [
+    "react",
+    "createportal",
+    "modals",
+    "dom-hierarchy"
+  ],
+  "total_tests": 3,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction Modal({ onClose }) {\n  // return ReactDOM.createPortal(..., document.body)\n  return null;\n}\n\nfunction App() {\n  const [open, setOpen] = useState(false);\n\n  return (\n    <div>\n      <button id=\"open-modal\">Open Modal</button>\n      {/* render <Modal /> when open */}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Portals', () => {\n  test('Has an Open Modal button', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#open-modal');\nif (!btn) throw new Error('No button with id \"open-modal\" found');\nif (document.querySelector('#modal'))\n  throw new Error('Modal should not render before the button is clicked');\n  });\n\n  test('Clicking Open renders the modal outside #root', async () => {\n    const { container: root } = render(<App />);\n    root.querySelector('#open-modal').click();\nawait tick();\nconst modal = document.querySelector('#modal');\nif (!modal) throw new Error('Expected element with id \"modal\" after opening');\nif (root.contains(modal))\n  throw new Error('Modal should be portaled OUT of #root (still inside it)');\n  });\n\n  test('Close button removes the modal', async () => {\n    const { container: root } = render(<App />);\n    const close = document.querySelector('#close-modal');\nif (!close) throw new Error('No close button with id \"close-modal\" found');\nclose.click();\nawait tick();\nif (document.querySelector('#modal'))\n  throw new Error('Modal should be removed after clicking Close');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

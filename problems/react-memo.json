@@ -1,0 +1,30 @@
+{
+  "title": "React.memo",
+  "description": "## React.memo\n\nWhen a parent re-renders, **all** of its children re-render by default — even if their props are identical to last time. `React.memo` wraps a component so React skips the render when the props shallow-compare equal.\n\n```jsx\nconst Child = React.memo(function Child({ name }) {\n  return <p>Hello, {name}</p>;\n});\n```\n\nNow `<Child name=\"React\" />` only re-runs when `name` changes — re-renders of the parent don't propagate.\n\n> Like `useMemo`, this is a tool for measured problems. Don't blanket-wrap everything.\n\n### Your Task\nBuild a parent counter and a memoized greeting child:\n1. Define a memoized component `Greeting` that renders `<h2 id=\"greeting\">Hello, {name}!</h2>`\n2. In `App`, hold a `count` state\n3. Render `<Greeting name=\"React\" />` and a `<p id=\"count\">Count: {count}</p>`\n4. Button `#bump` increments count by 1\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "react-memo",
+    "re-render-prevention",
+    "prop-equality"
+  ],
+  "total_tests": 4,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\n// Wrap this in React.memo\nfunction Greeting({ name }) {\n  return <h2 id=\"greeting\">Hello, {name}!</h2>;\n}\n\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div>\n      <Greeting name=\"React\" />\n      <p id=\"count\">Count: {count}</p>\n      <button id=\"bump\">Bump</button>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('React.memo', () => {\n  test('Renders the greeting', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#greeting');\nif (!el) throw new Error('No element with id \"greeting\" found');\nif (!el.textContent.includes('Hello, React!'))\n  throw new Error('Greeting should say \"Hello, React!\"');\n  });\n\n  test('Initial count is 0', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#count');\nif (!el || !el.textContent.includes('0'))\n  throw new Error('Initial count should be 0');\n  });\n\n  test('Bump button increments count', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#bump');\nif (!btn) throw new Error('No button with id \"bump\" found');\nbtn.click();\nawait tick();\nconst el = root.querySelector('#count');\nif (!el.textContent.includes('1'))\n  throw new Error('Count should be 1 after clicking Bump');\n  });\n\n  test('Greeting still renders after parent re-renders', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#greeting');\nif (!el || !el.textContent.includes('Hello, React!'))\n  throw new Error('Greeting should still say \"Hello, React!\" after a re-render');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

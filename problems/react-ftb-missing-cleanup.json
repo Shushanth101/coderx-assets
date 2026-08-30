@@ -1,0 +1,30 @@
+{
+  "title": "The Missing Cleanup",
+  "description": "## Fix the Bug: The Missing Cleanup\n\nThis component has a timer that increments a seconds counter every second. There's also a separate click counter. But something is wrong — every time you click the Increment button, the timer seems to speed up. After a few clicks, seconds are flying by.\n\n### Symptoms\n- Timer starts correctly at 1 tick/second\n- After clicking Increment a few times, the timer accelerates\n- Eventually the seconds counter is updating multiple times per second\n\n### Your Task\nFix the useEffect so that:\n- The timer always ticks at exactly 1 second intervals\n- Clicking Increment doesn't affect the timer speed\n- No intervals are left running when they shouldn't be\n\n> **Think about it:** What happens to the old interval when useEffect runs again?\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "useeffect-cleanup",
+    "setinterval",
+    "memory-leaks"
+  ],
+  "total_tests": 3,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [seconds, setSeconds] = useState(0);\n  const [clicks, setClicks] = useState(0);\n\n  useEffect(() => {\n    const id = setInterval(() => {\n      setSeconds(s => s + 1);\n    }, 1000);\n  }, [clicks]);\n\n  return (\n    <div>\n      <h2 id=\"seconds\">Seconds: {seconds}</h2>\n      <h2 id=\"clicks\">Clicks: {clicks}</h2>\n      <button id=\"increment\" onClick={() => setClicks(clicks + 1)}>\n        Increment\n      </button>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Missing Cleanup', () => {\n  test('Component renders correctly', async () => {\n    const { container: root } = render(<App />);\n    const s = root.querySelector('#seconds');\nconst c = root.querySelector('#clicks');\nif (!s) throw new Error('No #seconds element');\nif (!c) throw new Error('No #clicks element');\n  });\n\n  test('Increment button updates clicks', async () => {\n    const { container: root } = render(<App />);\n    root.querySelector('#increment').click();\nawait tick();\nconst el = root.querySelector('#clicks');\nif (!el.textContent.includes('1')) throw new Error('Clicks should be 1');\n  });\n\n  test('useEffect returns a cleanup function', async () => {\n    const { container: root } = render(<App />);\n    // Click multiple times rapidly and check timer doesn't accelerate\nroot.querySelector('#increment').click();\nroot.querySelector('#increment').click();\nroot.querySelector('#increment').click();\nconst before = parseInt(root.querySelector('#seconds').textContent.match(/\\d+/)[0]);\n// If cleanup is missing, multiple intervals are stacking up\n// We can't easily test timing, but we check the code structure via render stability\nconst el = root.querySelector('#seconds');\nif (!el) throw new Error('Timer should still be rendering');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

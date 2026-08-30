@@ -1,0 +1,29 @@
+{
+  "title": "The Instant Fire",
+  "description": "## Fix the Bug: The Instant Fire\n\nThis component has a button that should show an alert with the count when clicked. But the alert fires **immediately** when the component renders, and clicking the button does nothing.\n\n### Symptoms\n- Alert appears on page load (before any click)\n- Clicking the button has no effect\n- The count display works fine otherwise\n\n### Your Task\nFix the event handler so that:\n- No alert on initial render\n- Clicking the button shows the alert with the current count\n\n> **Think about it:** What's the difference between `onClick={fn()}` and `onClick={fn}`?\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "event-handlers",
+    "function-reference-vs-call"
+  ],
+  "total_tests": 3,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  const showAlert = () => {\n    alert('Count is: ' + count);\n  };\n\n  return (\n    <div>\n      <h2 id=\"count\">Count: {count}</h2>\n      <button id=\"increment\" onClick={() => setCount(count + 1)}>\n        Increment\n      </button>\n      <button id=\"alert-btn\" onClick={showAlert()}>\n        Show Count\n      </button>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Instant Fire', () => {\n  test('Component renders without firing alert', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#count');\nif (!el) throw new Error('Component did not render');\nif (!el.textContent.includes('0')) throw new Error('Should show count 0');\n  });\n\n  test('Increment button works', async () => {\n    const { container: root } = render(<App />);\n    root.querySelector('#increment').click();\nawait tick();\nconst el = root.querySelector('#count');\nif (!el.textContent.includes('1')) throw new Error('Count should be 1');\n  });\n\n  test('Alert fires on click, not on render', async () => {\n    const { container: root } = render(<App />);\n    const calls = [];\nconst origAlert = window.alert;\nwindow.alert = (msg) => { calls.push(String(msg)); };\ntry {\n  const inc = root.querySelector('#increment');\n  if (inc) { inc.click(); await tick(); }\n  if (calls.length > 0) throw new Error('Alert fired during render — pass the function reference, not the result of calling it');\n  const btn = root.querySelector('#alert-btn');\n  if (!btn) throw new Error('No #alert-btn found');\n  btn.click();\n  await tick();\n  if (calls.length === 0) throw new Error('Clicking #alert-btn did nothing — onClick should be a function reference');\n  if (!calls[calls.length - 1].includes('Count is:')) throw new Error('Alert message should include \"Count is:\"');\n} finally {\n  window.alert = origAlert;\n}\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "Suspense & lazy",
+  "description": "## Suspense & lazy\n\n`<React.Suspense>` lets a component **pause** while it waits for something — code, data, an image — and shows a **fallback** in the meantime.\n\n```jsx\n<React.Suspense fallback={<p>Loading...</p>}>\n  <Profile />\n</React.Suspense>\n```\n\nAnywhere inside `<Profile>` (or deeper), if a component \"throws a promise\", React catches it, renders the fallback, and re-tries when the promise resolves.\n\nIn production you'd usually pair this with `React.lazy(() => import('./Profile'))` for **code splitting** — the component's code is fetched only when first rendered.\n\n### Your Task\nA `greetingResource` is already created in the starter — calling `.read()` either returns the value or suspends. You don't need to touch it.\n\n1. Build a `Greeting` component that calls `greetingResource.read()` and renders the result in `<p id=\"message\">`\n2. In `App`, wrap `<Greeting />` in `<React.Suspense>` with fallback `<p id=\"loading\">Loading...</p>`\n  ",
+  "difficulty": "hard",
+  "tags": [
+    "react",
+    "react-suspense",
+    "react-lazy",
+    "loading-states",
+    "code-splitting"
+  ],
+  "total_tests": 2,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction createResource(promise) {\n  let status = 'pending';\n  let result;\n  const suspender = promise.then(\n    (data) => { status = 'success'; result = data; },\n    (error) => { status = 'error'; result = error; }\n  );\n  return {\n    read() {\n      if (status === 'pending') throw suspender;\n      if (status === 'error') throw result;\n      return result;\n    },\n  };\n}\n\nconst greetingResource = createResource(\n  new Promise((resolve) => setTimeout(() => resolve('Hello from Suspense!'), 80))\n);\n\n// Build Greeting and wrap it in Suspense\n\nfunction App() {\n  return (\n    <div>\n      {/* Suspense boundary goes here */}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Suspense & lazy', () => {\n  test('Resolved message renders inside the boundary', async () => {\n    const { container: root } = render(<App />);\n    await new Promise(r => setTimeout(r, 250));\nconst msg = root.querySelector('#message');\nif (!msg) throw new Error('Expected <p id=\"message\"> after the resource resolves');\nif (!msg.textContent.includes('Hello from Suspense!'))\n  throw new Error('Message should contain \"Hello from Suspense!\"');\n  });\n\n  test('Fallback is gone once the data is ready', async () => {\n    const { container: root } = render(<App />);\n    const loading = root.querySelector('#loading');\nif (loading) throw new Error('Fallback should be removed after the resource resolves');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

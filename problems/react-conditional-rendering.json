@@ -1,0 +1,30 @@
+{
+  "title": "Conditional Rendering",
+  "description": "## Conditional Rendering\n\nReact doesn't have special directives like `v-if`. Instead, you use plain JavaScript:\n\n### Patterns\n```jsx\n// Ternary\n{isLoggedIn ? <Dashboard /> : <LoginForm />}\n\n// && short-circuit (render or nothing)\n{showBanner && <Banner />}\n\n// Early return\nif (isLoading) return <Spinner />;\n```\n\n### Your Task\nBuild a login/logout toggle:\n1. Track `isLoggedIn` state, starting as **false**\n2. When logged out:\n   - Show `<p id=\"status\">` with text **\"Please log in\"**\n   - Show a button with id `\"login-btn\"` and text **\"Log In\"**\n3. When logged in:\n   - Show `<p id=\"status\">` with text **\"Welcome back!\"**\n   - Show a button with id `\"logout-btn\"` and text **\"Log Out\"**\n4. Add a `<span id=\"badge\">` that only appears when logged in, containing **\"Online\"**\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "ternary-operator",
+    "-short-circuit",
+    "conditional-styles"
+  ],
+  "total_tests": 6,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [isLoggedIn, setIsLoggedIn] = useState(false);\n\n  return (\n    <div>\n      {/* Your conditional rendering here */}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Conditional Rendering', () => {\n  test('Initially shows \"Please log in\"', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#status');\nif (!el) throw new Error('No #status element');\nif (!el.textContent.includes('Please log in'))\n  throw new Error('Should show \"Please log in\" initially');\n  });\n\n  test('Shows Log In button when logged out', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#login-btn');\nif (!btn) throw new Error('No #login-btn found');\nif (!btn.textContent.includes('Log In'))\n  throw new Error('Button should say \"Log In\"');\n  });\n\n  test('Clicking Log In shows \"Welcome back!\"', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#login-btn');\nbtn.click();\nawait tick();\nconst el = root.querySelector('#status');\nif (!el.textContent.includes('Welcome back!'))\n  throw new Error('Should show \"Welcome back!\" after login');\n  });\n\n  test('Shows Log Out button when logged in', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#logout-btn');\nif (!btn) throw new Error('No #logout-btn found after login');\n  });\n\n  test('Badge with \"Online\" appears when logged in', async () => {\n    const { container: root } = render(<App />);\n    const badge = root.querySelector('#badge');\nif (!badge) throw new Error('No #badge found when logged in');\nif (!badge.textContent.includes('Online'))\n  throw new Error('Badge should contain \"Online\"');\n  });\n\n  test('Clicking Log Out returns to logged-out state', async () => {\n    const { container: root } = render(<App />);\n    const logoutBtn = root.querySelector('#logout-btn');\nlogoutBtn.click();\nawait tick();\nconst el = root.querySelector('#status');\nif (!el.textContent.includes('Please log in'))\n  throw new Error('Should return to \"Please log in\" after logout');\nconst badge = root.querySelector('#badge');\nif (badge) throw new Error('Badge should not be visible when logged out');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

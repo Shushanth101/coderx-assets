@@ -1,0 +1,31 @@
+{
+  "title": "Components & Props",
+  "description": "## Components & Props\n\nComponents are the building blocks of React. A component is just a function that returns JSX. **Props** let you pass data from a parent component to a child.\n\n### Key Concepts\n- Components must start with an **uppercase letter**\n- Props are passed like HTML attributes: `<Greeting name=\"Alice\" />`\n- Inside the component, access them via the function parameter: `function Greeting({ name })`\n- Props are **read-only** — never modify them\n\n### Your Task\n1. Create a `UserCard` component that accepts `name` and `role` props\n   - Render an `<h2>` with the name\n   - Render a `<p>` with the role\n   - Wrap both in a `<div>` with `className=\"user-card\"`\n2. In the `App` component, render **two** `UserCard` components:\n   - One with name **\"Alice\"** and role **\"Developer\"**\n   - One with name **\"Bob\"** and role **\"Designer\"**\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "function-components",
+    "props",
+    "destructuring",
+    "composition"
+  ],
+  "total_tests": 4,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\n// Create your UserCard component here\n\n\nfunction App() {\n  return (\n    <div>\n      {/* Render two UserCard components */}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Components & Props', () => {\n  test('Renders two UserCard components', async () => {\n    const { container: root } = render(<App />);\n    const cards = root.querySelectorAll('.user-card');\nif (cards.length !== 2) throw new Error('Expected 2 elements with class \"user-card\", found ' + cards.length);\n  });\n\n  test('First card shows \"Alice\" and \"Developer\"', async () => {\n    const { container: root } = render(<App />);\n    const cards = root.querySelectorAll('.user-card');\nconst first = cards[0];\nif (!first) throw new Error('No user-card found');\nif (!first.querySelector('h2')?.textContent.includes('Alice'))\n  throw new Error('First card h2 should contain \"Alice\"');\nif (!first.querySelector('p')?.textContent.includes('Developer'))\n  throw new Error('First card p should contain \"Developer\"');\n  });\n\n  test('Second card shows \"Bob\" and \"Designer\"', async () => {\n    const { container: root } = render(<App />);\n    const cards = root.querySelectorAll('.user-card');\nconst second = cards[1];\nif (!second) throw new Error('Second user-card not found');\nif (!second.querySelector('h2')?.textContent.includes('Bob'))\n  throw new Error('Second card h2 should contain \"Bob\"');\nif (!second.querySelector('p')?.textContent.includes('Designer'))\n  throw new Error('Second card p should contain \"Designer\"');\n  });\n\n  test('Each card has an <h2> and <p> inside a div', async () => {\n    const { container: root } = render(<App />);\n    const cards = root.querySelectorAll('.user-card');\ncards.forEach((card, i) => {\n  if (card.tagName !== 'DIV') throw new Error('Card ' + (i+1) + ' should be a <div>');\n  if (!card.querySelector('h2')) throw new Error('Card ' + (i+1) + ' missing <h2>');\n  if (!card.querySelector('p')) throw new Error('Card ' + (i+1) + ' missing <p>');\n});\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "title": "The Slow Reply",
+  "description": "## Fix the Bug: The Slow Reply\n\nThis search box fires a (simulated) request every time the query changes. The problem: the API responds **faster for short queries** and slower for long ones. If you type `react` and then quickly delete down to `r`, the response for `r` arrives first, then the older `react` response lands on top of it — showing stale results.\n\n### Symptoms\n- Latest query in the input, stale results on screen\n- The bug is timing-dependent — it surfaces when responses arrive **out of order**\n\n### Your Task\nMake sure only the **latest** request's result is written to state. Older in-flight requests should be ignored when they finally resolve.\n\n> **Think about it:** the effect cleanup runs **before the next effect** and **on unmount**. What state can you flip in cleanup to make the older `then` a no-op?\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "useeffect-cleanup",
+    "race-conditions",
+    "cancellation"
+  ],
+  "total_tests": 2,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction fakeFetch(query) {\n  // Shorter queries reply faster — easy to trigger the race\n  const delay = query.length < 3 ? 50 : 300;\n  return new Promise((resolve) =>\n    setTimeout(() => resolve('Results for: ' + query), delay)\n  );\n}\n\nfunction App() {\n  const [query, setQuery] = useState('react');\n  const [result, setResult] = useState('');\n\n  useEffect(() => {\n    fakeFetch(query).then(setResult);\n  }, [query]);\n\n  return (\n    <div>\n      <input\n        id=\"query\"\n        value={query}\n        onChange={(e) => setQuery(e.target.value)}\n      />\n      <p id=\"result\">{result}</p>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Slow Reply', () => {\n  test('Input and result render', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#query');\nconst result = root.querySelector('#result');\nif (!input) throw new Error('No input with id \"query\" found');\nif (!result) throw new Error('No element with id \"result\" found');\n  });\n\n  test('The latest query\\u2019s result is the one that lands', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#query');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\n// Initial render kicked off the slow fetch for \"react\" (300ms)\n// Now switch to a short query that responds fast (50ms)\nsetter.call(input, 'r');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\n// Wait long enough for BOTH fetches to resolve\nawait new Promise(r => setTimeout(r, 500));\nconst text = root.querySelector('#result').textContent.trim();\nif (text !== 'Results for: r')\n  throw new Error('Expected result for the latest query \"r\", got: \"' + text + '\"');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

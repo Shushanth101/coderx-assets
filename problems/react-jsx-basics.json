@@ -1,0 +1,31 @@
+{
+  "title": "JSX Basics",
+  "description": "## JSX Basics\n\nJSX looks like HTML but lives inside JavaScript. Under the hood, `<h1>Hello</h1>` becomes `React.createElement('h1', null, 'Hello')`.\n\n### Key Rules\n- Use `className` instead of `class`\n- Embed JavaScript expressions with curly braces `{}`\n- JSX must return a **single root element** (use `<div>` or `<>` fragments)\n- Self-closing tags must end with `/>` (e.g., `<img />`, `<br />`)\n\n### Your Task\nCreate an `App` component that renders:\n1. A `<div>` wrapper containing:\n   - An `<h1>` with the text **\"Hello, React!\"**\n   - A `<p>` that displays the value of `const year = 2026` using a JSX expression\n   - A `<p>` with `className=\"subtitle\"` containing any text\n\n> **Hint:** Use `{year}` inside JSX to embed the variable.\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "jsx-syntax",
+    "expressions-with-",
+    "classname",
+    "fragments"
+  ],
+  "total_tests": 4,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const year = 2026;\n\n  return (\n    // Replace this comment with your JSX\n    null\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('JSX Basics', () => {\n  test('Renders an <h1> with \"Hello, React!\"', async () => {\n    const { container: root } = render(<App />);\n    const h1 = root.querySelector('h1');\nif (!h1) throw new Error('No <h1> element found');\nif (!h1.textContent.includes('Hello, React!'))\n  throw new Error('h1 should contain \"Hello, React!\"');\n  });\n\n  test('Displays the year 2026 in a <p> tag', async () => {\n    const { container: root } = render(<App />);\n    const paragraphs = root.querySelectorAll('p');\nconst hasYear = Array.from(paragraphs).some(p => p.textContent.includes('2026'));\nif (!hasYear) throw new Error('A <p> should contain \"2026\"');\n  });\n\n  test('Has a <p> with className=\"subtitle\"', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('.subtitle');\nif (!el) throw new Error('No element with className \"subtitle\" found');\nif (el.tagName !== 'P') throw new Error('The element with class \"subtitle\" should be a <p>');\n  });\n\n  test('Wrapped in a single root <div>', async () => {\n    const { container: root } = render(<App />);\n    const wrapper = root.firstElementChild;\nif (!wrapper || wrapper.tagName !== 'DIV')\n  throw new Error('Component should return a single <div> wrapper');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

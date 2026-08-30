@@ -1,0 +1,31 @@
+{
+  "title": "useMemo & useCallback",
+  "description": "## useMemo & useCallback\n\nEvery render creates **new objects, arrays, and functions** — even if their contents look identical. Two hooks let you skip that work when the inputs haven't changed:\n\n### useMemo — cache a computed value\n```jsx\nconst filtered = useMemo(\n  () => items.filter(i => i.includes(query)),\n  [items, query]  // recompute only when these change\n);\n```\n\n### useCallback — cache a function reference\n```jsx\nconst handleChange = useCallback((e) => setQuery(e.target.value), []);\n```\n\n> **Rule of thumb:** Don't reach for these by default. Use them when you have a **measurably** expensive computation or when a child component is wrapped in `React.memo` and needs stable props.\n\n### Your Task\nBuild a filterable fruit list:\n1. Items: `['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape']`\n2. `<input id=\"filter\">` controls the filter query\n3. Use `useMemo` to compute the filtered list (case-insensitive match)\n4. Use `useCallback` for the onChange handler\n5. Render matches in `<ul id=\"results\">` with one `<li>` per item\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "usememo",
+    "usecallback",
+    "referential-equality",
+    "render-optimization"
+  ],
+  "total_tests": 4,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [query, setQuery] = useState('');\n  const items = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape'];\n\n  // Memoize the filtered list\n  // Memoize the change handler\n\n  return (\n    <div>\n      <input id=\"filter\" placeholder=\"Filter...\" />\n      <ul id=\"results\"></ul>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('useMemo & useCallback', () => {\n  test('Shows all 7 items by default', async () => {\n    const { container: root } = render(<App />);\n    const items = root.querySelectorAll('#results li');\nif (items.length !== 7) throw new Error('Expected 7 items initially, got ' + items.length);\n  });\n\n  test('Typing \"a\" narrows to items containing \"a\"', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#filter');\nif (!input) throw new Error('No input with id \"filter\" found');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(input, 'a');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nconst items = root.querySelectorAll('#results li');\nconst texts = Array.from(items).map(li => li.textContent);\nconst expected = ['apple', 'banana', 'date', 'grape'];\nif (items.length !== expected.length)\n  throw new Error('Expected ' + expected.length + ' items containing \"a\", got ' + items.length);\nfor (const want of expected) {\n  if (!texts.includes(want)) throw new Error('Missing item \"' + want + '\" in filtered list');\n}\n  });\n\n  test('A no-match query renders zero items', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#filter');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(input, 'zzz');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nconst items = root.querySelectorAll('#results li');\nif (items.length !== 0) throw new Error('Expected 0 items for \"zzz\", got ' + items.length);\n  });\n\n  test('Filter is case-insensitive', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#filter');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(input, 'BAN');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nconst items = root.querySelectorAll('#results li');\nconst texts = Array.from(items).map(li => li.textContent);\nif (!texts.includes('banana'))\n  throw new Error('Expected \"banana\" to match query \"BAN\" (case-insensitive)');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

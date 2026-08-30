@@ -1,0 +1,27 @@
+{
+  "title": "Multi-step Wizard",
+  "description": "## Step 2: Multi-step Wizard\n\nSplit the form into 3 steps. Only one step is visible at a time.\n\n### Requirements\n1. Track current step as a number 1, 2, or 3 in state\n2. Render `<p id=\"step-indicator\">Step X of 3</p>` always\n3. Step 1: `#name` input + `#next` button\n4. Step 2: `#email` input + `#back` + `#next` buttons\n5. Step 3: `#role` select + `#back` + `#submit` buttons\n6. After submit, hide the form and render `<div id=\"summary\">` with the values\n      ",
+  "difficulty": "easy",
+  "tags": [
+    "react"
+  ],
+  "total_tests": 3,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [step, setStep] = useState(1);\n  const [name, setName] = useState('');\n  const [email, setEmail] = useState('');\n  const [role, setRole] = useState('Designer');\n  const [submitted, setSubmitted] = useState(false);\n\n  if (submitted) {\n    return (\n      <div id=\"summary\">\n        <p>Name: {name}</p>\n        <p>Email: {email}</p>\n        <p>Role: {role}</p>\n      </div>\n    );\n  }\n\n  return (\n    <div>\n      <p id=\"step-indicator\">Step {step} of 3</p>\n      {/* Render step 1, 2, or 3 here */}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Multi-step Wizard', () => {\n  test('Starts on step 1', async () => {\n    const { container: root } = render(<App />);\n    const ind = root.querySelector('#step-indicator');\nif (!ind || !ind.textContent.includes('Step 1 of 3'))\n  throw new Error('Expected indicator \"Step 1 of 3\"');\nif (!root.querySelector('#name')) throw new Error('Step 1 should show #name');\nif (root.querySelector('#email')) throw new Error('Step 1 should NOT show #email yet');\n  });\n\n  test('Next/Back walks through all 3 steps', async () => {\n    const { container: root } = render(<App />);\n    const inputSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nconst name = root.querySelector('#name');\ninputSetter.call(name, 'Aanya');\nname.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nroot.querySelector('#next').click();\nawait tick();\nif (!root.querySelector('#email')) throw new Error('Step 2 should show #email');\nconst email = root.querySelector('#email');\ninputSetter.call(email, 'a@x.com');\nemail.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nroot.querySelector('#next').click();\nawait tick();\nif (!root.querySelector('#role')) throw new Error('Step 3 should show #role');\n// Back from step 3 to 2\nroot.querySelector('#back').click();\nawait tick();\nif (!root.querySelector('#email')) throw new Error('Back from 3 should return to step 2');\nroot.querySelector('#next').click();\nawait tick();\nif (!root.querySelector('#submit')) throw new Error('Step 3 should show #submit');\n  });\n\n  test('Submit shows summary with carried-over values', async () => {\n    const { container: root } = render(<App />);\n    root.querySelector('#submit').click();\nawait tick();\nconst sum = root.querySelector('#summary');\nif (!sum) throw new Error('Expected #summary after submit');\nconst text = sum.textContent;\nif (!text.includes('Aanya')) throw new Error('Summary missing name carried from step 1');\nif (!text.includes('a@x.com')) throw new Error('Summary missing email carried from step 2');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

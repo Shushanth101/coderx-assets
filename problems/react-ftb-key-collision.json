@@ -1,0 +1,30 @@
+{
+  "title": "The Wandering Edit",
+  "description": "## Fix the Bug: The Wandering Edit\n\nThe list renders fine. The reverse button reorders the array. But edits to the input fields don't follow their item — they stay glued to the **position** they were typed in.\n\n### Symptoms\n- Edit the Apple input to \"Apple Pie\"\n- Click **Reverse**\n- The text \"Apple Pie\" now appears on **Cherry** (the new top row), not on the Apple input\n\n### Your Task\nMake each input stay with its item after a reorder.\n\n> **Think about it:** React decides whether to reuse or recreate a child by its **`key`**. What happens when the key is the array index? When items move, the indices don't — so position 0 keeps the same DOM node even though it now holds a different item.\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "list-keys",
+    "reconciliation",
+    "uncontrolled-inputs"
+  ],
+  "total_tests": 2,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [items, setItems] = useState([\n    { id: 'a', label: 'Apple' },\n    { id: 'b', label: 'Banana' },\n    { id: 'c', label: 'Cherry' },\n  ]);\n\n  const reverse = () => setItems([...items].reverse());\n\n  return (\n    <div>\n      <button id=\"reverse\" onClick={reverse}>Reverse</button>\n      <ul id=\"list\">\n        {items.map((item, i) => (\n          <li key={i}>\n            <input id={'input-' + item.id} defaultValue={item.label} />\n          </li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Wandering Edit', () => {\n  test('List and reverse button render', async () => {\n    const { container: root } = render(<App />);\n    if (!root.querySelector('#reverse')) throw new Error('No #reverse button found');\nconst lis = root.querySelectorAll('#list li');\nif (lis.length !== 3) throw new Error('Expected 3 list items, got ' + lis.length);\n  });\n\n  test('Typed text follows its item after a reorder', async () => {\n    const { container: root } = render(<App />);\n    const a = root.querySelector('#input-a');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(a, 'Apple Pie');\na.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nroot.querySelector('#reverse').click();\nawait tick();\nconst aAfter = root.querySelector('#input-a');\nconst cAfter = root.querySelector('#input-c');\nif (!aAfter) throw new Error('Lost #input-a after reorder');\nif (aAfter.value !== 'Apple Pie')\n  throw new Error('The Apple input should still hold \"Apple Pie\" after reverse — got \"' + aAfter.value + '\"');\nif (cAfter.value === 'Apple Pie')\n  throw new Error('The edit leaked onto the Cherry input — key is tied to position, not identity');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

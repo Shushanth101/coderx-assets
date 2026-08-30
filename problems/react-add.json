@@ -1,0 +1,27 @@
+{
+  "title": "Add Todos",
+  "description": "## Step 1: Add Todos\n\nThe skeleton is in place. Wire up the input and button so the user can add todos to the list.\n\n### Requirements\n1. Track the input value in state\n2. Clicking **Add** appends the typed text as a new `<li>` in `<ul id=\"todos\">`\n3. After adding, **clear the input**\n4. Ignore empty/whitespace-only submissions\n5. Each `<li>` should have a stable `key` (use `Date.now()` or a counter — anything but the array index)\n        ",
+  "difficulty": "easy",
+  "tags": [
+    "react"
+  ],
+  "total_tests": 5,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [todos, setTodos] = useState([]);\n  // const [text, setText] = useState('');\n\n  return (\n    <div>\n      <input id=\"new-todo\" placeholder=\"What needs doing?\" />\n      <button id=\"add\">Add</button>\n      <ul id=\"todos\"></ul>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Add Todos', () => {\n  test('Renders input, button, and list', async () => {\n    const { container: root } = render(<App />);\n    if (!root.querySelector('#new-todo')) throw new Error('Missing #new-todo input');\nif (!root.querySelector('#add')) throw new Error('Missing #add button');\nif (!root.querySelector('#todos')) throw new Error('Missing #todos ul');\n  });\n\n  test('Typing and clicking Add appends a todo', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#new-todo');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(input, 'Buy milk');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nroot.querySelector('#add').click();\nawait tick();\nconst items = root.querySelectorAll('#todos li');\nif (items.length !== 1) throw new Error('Expected 1 todo, got ' + items.length);\nif (!items[0].textContent.includes('Buy milk')) throw new Error('Todo text should be \"Buy milk\"');\n  });\n\n  test('Input clears after adding', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#new-todo');\nif (input.value !== '') throw new Error('Input should be empty after adding');\n  });\n\n  test('Adds multiple todos', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#new-todo');\nconst btn = root.querySelector('#add');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(input, 'Walk dog');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nbtn.click();\nawait tick();\nsetter.call(input, 'Write tests');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nbtn.click();\nawait tick();\nconst items = root.querySelectorAll('#todos li');\nif (items.length < 3) throw new Error('Expected at least 3 todos, got ' + items.length);\n  });\n\n  test('Empty input is ignored', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#new-todo');\nconst btn = root.querySelector('#add');\nconst before = root.querySelectorAll('#todos li').length;\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(input, '   ');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nbtn.click();\nawait tick();\nconst after = root.querySelectorAll('#todos li').length;\nif (after !== before) throw new Error('Whitespace-only input should not add a todo');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

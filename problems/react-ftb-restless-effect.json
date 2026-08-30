@@ -1,0 +1,30 @@
+{
+  "title": "The Restless Effect",
+  "description": "## Fix the Bug: The Restless Effect\n\n`Logger` lists `config` in its dependency array. Yet bumping the counter causes the Logger to fire its effect over and over. Open the preview — the counter visible at the top is \"how many times the Logger effect has fired since you opened the page.\"\n\n### Symptoms\n- Click the **+** button a few times — `#fires` grows by one with each click, even though `config` is just `{ level: 'info' }` and never actually changes\n\n### Your Task\nMake the Logger’s effect fire **only once on mount**, and never again from unrelated re-renders.\n\n> **Think about it:** `{}` is a new object on every render. React’s dependency array uses `Object.is` to compare. A \"shape-equal\" object isn’t reference-equal. Which hook gives you a stable reference between renders?\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "referential-equality",
+    "usememo",
+    "useeffect-dependencies"
+  ],
+  "total_tests": 2,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction Logger({ config }) {\n  useEffect(() => {\n    window.__fires = (window.__fires || 0) + 1;\n    const el = document.getElementById('fires');\n    if (el) el.textContent = String(window.__fires);\n  }, [config]);\n  return null;\n}\n\nfunction App() {\n  const [count, setCount] = useState(0);\n  const config = { level: 'info' };\n\n  return (\n    <div>\n      <p id=\"fires\">0</p>\n      <p id=\"count\">Count: {count}</p>\n      <button id=\"inc\" onClick={() => setCount(count + 1)}>+</button>\n      <Logger config={config} />\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Restless Effect', () => {\n  test('Counter renders and increments', async () => {\n    const { container: root } = render(<App />);\n    if (!root.querySelector('#count')) throw new Error('No #count found');\nroot.querySelector('#inc').click();\nawait tick();\nif (!root.querySelector('#count').textContent.includes('1'))\n  throw new Error('Count should be 1 after one click');\n  });\n\n  test('Logger does not re-fire on unrelated re-renders', async () => {\n    const { container: root } = render(<App />);\n    // reset the counter we control, then click a few times and verify nothing fires\nwindow.__fires = 0;\nconst el = root.querySelector('#fires');\nif (el) el.textContent = '0';\nfor (let i = 0; i < 3; i++) {\n  root.querySelector('#inc').click();\n  await tick();\n}\nif (window.__fires > 0)\n  throw new Error('Logger effect fired ' + window.__fires + ' extra time(s) when only count changed — config should be referentially stable');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

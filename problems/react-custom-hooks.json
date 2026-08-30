@@ -1,0 +1,31 @@
+{
+  "title": "Custom Hooks",
+  "description": "## Custom Hooks\n\nA **custom hook** is a function that starts with `use` and can call other hooks. It lets you extract reusable stateful logic.\n\n### Example\n```jsx\nfunction useToggle(initial = false) {\n  const [value, setValue] = useState(initial);\n  const toggle = () => setValue(v => !v);\n  return [value, toggle];\n}\n\n// Usage\nfunction App() {\n  const [isOn, toggle] = useToggle(false);\n  return <button onClick={toggle}>{isOn ? 'ON' : 'OFF'}</button>;\n}\n```\n\n### Your Task\n1. Create a custom hook called `useCounter` that:\n   - Accepts an `initialValue` parameter (default: 0)\n   - Returns an object: `{ count, increment, decrement, reset }`\n   - `increment` adds 1, `decrement` subtracts 1, `reset` goes back to initial\n\n2. Use `useCounter` in TWO separate components:\n   - `CounterA`: uses `useCounter(0)`, renders in a div with id `\"counter-a\"`\n   - `CounterB`: uses `useCounter(10)`, renders in a div with id `\"counter-b\"`\n   - Each should display the count in a `<span className=\"count\">` and have increment/decrement buttons\n\n3. **Crucially**, each counter should work **independently** — clicking one doesn't affect the other.\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "custom-hooks",
+    "use-prefix",
+    "reusability",
+    "encapsulation"
+  ],
+  "total_tests": 5,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\n// Create your useCounter hook here\n\n\nfunction CounterA() {\n  // Use useCounter(0)\n  return (\n    <div id=\"counter-a\">\n      {/* Display count and buttons */}\n    </div>\n  );\n}\n\nfunction CounterB() {\n  // Use useCounter(10)\n  return (\n    <div id=\"counter-b\">\n      {/* Display count and buttons */}\n    </div>\n  );\n}\n\nfunction App() {\n  return (\n    <div>\n      <CounterA />\n      <CounterB />\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Custom Hooks', () => {\n  test('CounterA starts at 0', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#counter-a .count');\nif (!el) throw new Error('No .count in #counter-a');\nif (el.textContent.trim() !== '0') throw new Error('CounterA should start at 0');\n  });\n\n  test('CounterB starts at 10', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#counter-b .count');\nif (!el) throw new Error('No .count in #counter-b');\nif (el.textContent.trim() !== '10') throw new Error('CounterB should start at 10');\n  });\n\n  test('CounterA increment works', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#counter-a .inc');\nif (!btn) throw new Error('No .inc button in #counter-a');\nbtn.click();\nawait tick();\nconst el = root.querySelector('#counter-a .count');\nif (el.textContent.trim() !== '1') throw new Error('CounterA should be 1 after increment');\n  });\n\n  test('Counters are independent', async () => {\n    const { container: root } = render(<App />);\n    const bCount = root.querySelector('#counter-b .count');\nif (bCount.textContent.trim() !== '10')\n  throw new Error('CounterB should still be 10 — counters must be independent');\n  });\n\n  test('CounterB reset returns to initial value', async () => {\n    const { container: root } = render(<App />);\n    const incBtn = root.querySelector('#counter-b .inc');\nincBtn.click();\nawait tick();\nincBtn.click();\nawait tick();\nconst resetBtn = root.querySelector('#counter-b .reset');\nif (!resetBtn) throw new Error('No .reset button in #counter-b');\nresetBtn.click();\nawait tick();\nconst el = root.querySelector('#counter-b .count');\nif (el.textContent.trim() !== '10') throw new Error('CounterB should reset to 10');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

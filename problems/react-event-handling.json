@@ -1,0 +1,31 @@
+{
+  "title": "Event Handling",
+  "description": "## Event Handling\n\nReact events are named using camelCase: `onClick`, `onChange`, `onSubmit`.\nYou pass a **function** as the handler, not a string.\n\n### Key Patterns\n```jsx\n// Inline handler\n<button onClick={() => alert('clicked!')}>Click</button>\n\n// Named handler\nfunction handleClick() { alert('clicked!'); }\n<button onClick={handleClick}>Click</button>\n\n// With event object\n<input onChange={(e) => setValue(e.target.value)} />\n```\n\n### Your Task\nBuild a simple item list:\n1. Create an input with id **\"item-input\"** for typing items\n2. Track the input value in state\n3. Add a button with id **\"add-btn\"** that adds the input text to a list\n4. After adding, **clear the input**\n5. Render the list as `<ul id=\"item-list\">` with `<li>` elements\n6. Each `<li>` should display the item text\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "onclick",
+    "onchange",
+    "event-object",
+    "controlled-inputs"
+  ],
+  "total_tests": 4,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [inputValue, setInputValue] = useState('');\n  const [items, setItems] = useState([]);\n\n  return (\n    <div>\n      {/* Add input, button, and list here */}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Event Handling', () => {\n  test('Has an input with id \"item-input\"', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#item-input');\nif (!input) throw new Error('No input with id \"item-input\" found');\nif (input.tagName !== 'INPUT') throw new Error('Element should be an <input>');\n  });\n\n  test('Typing and clicking Add adds item to list', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#item-input');\nconst btn = root.querySelector('#add-btn');\nif (!btn) throw new Error('No button with id \"add-btn\" found');\nconst nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nnativeInputValueSetter.call(input, 'Test Item');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nbtn.click();\nawait tick();\nconst list = root.querySelector('#item-list');\nif (!list) throw new Error('No <ul> with id \"item-list\" found');\nconst items = list.querySelectorAll('li');\nif (items.length < 1) throw new Error('Expected at least 1 item in the list');\nif (!items[items.length - 1].textContent.includes('Test Item'))\n  throw new Error('Last item should contain \"Test Item\"');\n  });\n\n  test('Input clears after adding an item', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#item-input');\nif (input.value !== '') throw new Error('Input should be empty after adding an item');\n  });\n\n  test('Can add multiple items', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#item-input');\nconst btn = root.querySelector('#add-btn');\nconst nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nnativeInputValueSetter.call(input, 'Item A');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nbtn.click();\nawait tick();\nnativeInputValueSetter.call(input, 'Item B');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nbtn.click();\nawait tick();\nconst items = root.querySelectorAll('#item-list li');\nif (items.length < 2) throw new Error('Expected at least 2 items in the list');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

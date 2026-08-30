@@ -1,0 +1,29 @@
+{
+  "title": "The Disappearing List",
+  "description": "## Fix the Bug: The Disappearing List\n\nThis todo list lets you add and delete items. But when you delete an item from the middle of the list, strange things happen — wrong items disappear, or the list gets jumbled.\n\n### Symptoms\n- Adding items works fine\n- Deleting the last item works\n- Deleting from the middle causes wrong items to be removed\n- React may show a warning about keys in the console\n\n### Your Task\nFix the list rendering so that:\n- Each item can be correctly deleted\n- The list updates predictably\n- No React key warnings\n\n> **Think about it:** How does React identify which item is which in a list?\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "keys",
+    "list-rendering"
+  ],
+  "total_tests": 3,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [items, setItems] = useState([\n    { id: 1, text: 'Learn React' },\n    { id: 2, text: 'Fix bugs' },\n    { id: 3, text: 'Ship code' },\n  ]);\n\n  const deleteItem = (id) => {\n    setItems(items.filter(item => item.id !== id));\n  };\n\n  return (\n    <div>\n      <h2>Todo List</h2>\n      <ul id=\"todo-list\">\n        {items.map((item, index) => (\n          <li key={index}>\n            <span className=\"item-text\">{item.text}</span>\n            <button className=\"delete-btn\" onClick={() => deleteItem(item.id)}>\n              Delete\n            </button>\n          </li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Disappearing List', () => {\n  test('Renders all 3 items initially', async () => {\n    const { container: root } = render(<App />);\n    const items = root.querySelectorAll('#todo-list li');\nif (items.length !== 3) throw new Error('Expected 3 items, found ' + items.length);\n  });\n\n  test('Deleting middle item removes correct one', async () => {\n    const { container: root } = render(<App />);\n    const buttons = root.querySelectorAll('.delete-btn');\nbuttons[1].click();\nawait tick();\nconst items = root.querySelectorAll('#todo-list li');\nif (items.length !== 2) throw new Error('Expected 2 items after delete');\nconst texts = Array.from(items).map(li => li.querySelector('.item-text').textContent);\nif (texts.includes('Fix bugs')) throw new Error('\"Fix bugs\" should have been deleted');\nif (!texts.includes('Learn React')) throw new Error('\"Learn React\" should still exist');\nif (!texts.includes('Ship code')) throw new Error('\"Ship code\" should still exist');\n  });\n\n  test('Uses stable keys (not array index)', async () => {\n    const { container: root } = render(<App />);\n    const buttons = root.querySelectorAll('.delete-btn');\nbuttons[0].click();\nawait tick();\nconst items = root.querySelectorAll('#todo-list li');\nconst text = items[0]?.querySelector('.item-text')?.textContent;\nif (text !== 'Ship code') throw new Error('After deleting first item, \"Ship code\" should remain correctly positioned');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

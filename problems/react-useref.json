@@ -1,0 +1,30 @@
+{
+  "title": "useRef",
+  "description": "## useRef\n\n`useRef` gives you a **mutable box** whose `.current` value sticks around between renders — and updating it does **not** trigger a re-render.\n\nThe most common job: grab a DOM node so you can call imperative APIs like `focus()`, `scrollIntoView()`, or `play()`.\n\n### Pattern\n```jsx\nconst inputRef = useRef(null);\n\n// 1. Attach the ref\n<input ref={inputRef} />\n\n// 2. Use the node\ninputRef.current.focus();\n```\n\n### Your Task\nBuild a search bar that focuses programmatically:\n1. Create a ref with `useRef(null)`\n2. Attach it to the `<input id=\"search\">`\n3. Wire `<button id=\"focus-btn\">` so clicking it focuses the input\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "useref-hook",
+    "dom-access",
+    "mutable-refs"
+  ],
+  "total_tests": 3,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  // Create a ref for the input\n\n  return (\n    <div>\n      <input id=\"search\" placeholder=\"Search...\" />\n      <button id=\"focus-btn\">Focus Input</button>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('useRef', () => {\n  test('Has an input with id \"search\"', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#search');\nif (!input) throw new Error('No input with id \"search\" found');\nif (input.tagName !== 'INPUT') throw new Error('Element should be an <input>');\n  });\n\n  test('Has a button with id \"focus-btn\"', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#focus-btn');\nif (!btn) throw new Error('No button with id \"focus-btn\" found');\n  });\n\n  test('Clicking the button focuses the input', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#search');\nconst btn = root.querySelector('#focus-btn');\ninput.blur();\nbtn.click();\nawait tick();\nif (document.activeElement !== input)\n  throw new Error('Input should be focused after clicking the button');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

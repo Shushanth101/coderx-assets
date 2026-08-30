@@ -1,0 +1,31 @@
+{
+  "title": "useEffect & Lifecycle",
+  "description": "## useEffect & Lifecycle\n\n`useEffect` lets you run **side effects** — things that happen outside of rendering, like updating the document title, setting up timers, or fetching data.\n\n### How It Works\n```jsx\n// Runs after every render\nuseEffect(() => { ... });\n\n// Runs only on mount (empty deps)\nuseEffect(() => { ... }, []);\n\n// Runs when \"count\" changes\nuseEffect(() => { ... }, [count]);\n\n// Cleanup function (runs before next effect or unmount)\nuseEffect(() => {\n  const timer = setInterval(...);\n  return () => clearInterval(timer); // cleanup\n}, []);\n```\n\n### Your Task\n1. Create a counter with `useState`, starting at **0**\n2. Display it in `<h2 id=\"count\">`\n3. Use `useEffect` to update `document.title` to `\"Count: X\"` whenever count changes\n4. Add an **Increment** button with id `\"increment\"`\n5. Display a message `<p id=\"mounted\">` that says **\"Component is mounted!\"** — set this text using `useEffect` with an empty dependency array and a state variable\n\n> **Note:** The document title won't be visible in the preview, but the tests will check it!\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "useeffect",
+    "dependency-array",
+    "cleanup",
+    "side-effects"
+  ],
+  "total_tests": 4,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [count, setCount] = useState(0);\n  const [mountMsg, setMountMsg] = useState('');\n\n  // Add your useEffect hooks here\n\n  return (\n    <div>\n      <h2 id=\"count\">Count: {count}</h2>\n      <button id=\"increment\" onClick={() => setCount(count + 1)}>\n        Increment\n      </button>\n      <p id=\"mounted\">{mountMsg}</p>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('useEffect & Lifecycle', () => {\n  test('Renders count as 0', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#count');\nif (!el) throw new Error('No #count element');\nif (!el.textContent.includes('0')) throw new Error('Initial count should be 0');\n  });\n\n  test('document.title updates with count', async () => {\n    const { container: root } = render(<App />);\n    if (!document.title.includes('Count:')) throw new Error('document.title should contain \"Count:\"');\nconst btn = root.querySelector('#increment');\nbtn.click();\nawait tick();\nif (!document.title.includes('1')) throw new Error('document.title should contain \"1\" after increment');\n  });\n\n  test('Shows \"Component is mounted!\" on mount', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#mounted');\nif (!el) throw new Error('No #mounted element');\nif (!el.textContent.includes('Component is mounted!'))\n  throw new Error('Should display \"Component is mounted!\"');\n  });\n\n  test('Increment button updates count', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#increment');\nif (!btn) throw new Error('No #increment button');\nbtn.click();\nawait tick();\nconst el = root.querySelector('#count');\nif (!el.textContent.includes('2')) throw new Error('Count should update on click');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

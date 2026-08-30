@@ -1,0 +1,30 @@
+{
+  "title": "The Dropped Prop",
+  "description": "## Fix the Bug: The Dropped Prop\n\n`App` owns the theme. `Label` displays it. In between sit `Section` and `Card` — pure passthroughs that contribute nothing but **forgot to forward the prop**. The label is rendering `undefined`.\n\nYou *could* patch every intermediate component to pass `theme` through. But that's exactly the smell **Context** was designed to remove: when a value is needed deep in the tree by a component that doesn't care which ancestor provides it, lift it into a context.\n\n### Symptoms\n- `<p id=\"theme\">` reads \"Theme: undefined\" on first render\n- Toggling does nothing visible\n\n### Your Task\nMake the label reflect the current theme — initially `dark`, and updated when the user clicks the toggle.\n\n> **Hint:** This challenge wants you to reach for `createContext` + `useContext` rather than threading the prop through every middle layer.\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "prop-drilling",
+    "context-api",
+    "createcontext-usecontext"
+  ],
+  "total_tests": 2,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [theme, setTheme] = useState('dark');\n  return (\n    <div>\n      <button id=\"toggle\" onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}>\n        Toggle\n      </button>\n      <Section theme={theme} />\n    </div>\n  );\n}\n\nfunction Section({ theme }) {\n  // forgot to forward theme\n  return <Card />;\n}\n\nfunction Card({ theme }) {\n  // forgot to forward theme\n  return <Label />;\n}\n\nfunction Label({ theme }) {\n  return <p id=\"theme\">Theme: {theme ?? 'undefined'}</p>;\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Dropped Prop', () => {\n  test('Label shows the initial theme', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#theme');\nif (!el) throw new Error('No element with id \"theme\" found');\nif (!el.textContent.includes('dark'))\n  throw new Error('Initial label should show \"dark\" — got: ' + el.textContent);\nif (el.textContent.includes('undefined'))\n  throw new Error('Label is rendering undefined — the theme value never reached <Label/>');\n  });\n\n  test('Toggling updates the deep label', async () => {\n    const { container: root } = render(<App />);\n    root.querySelector('#toggle').click();\nawait tick();\nconst el = root.querySelector('#theme');\nif (!el.textContent.includes('light'))\n  throw new Error('After toggle, label should show \"light\" — got: ' + el.textContent);\nroot.querySelector('#toggle').click();\nawait tick();\nif (!root.querySelector('#theme').textContent.includes('dark'))\n  throw new Error('After second toggle, label should be back to \"dark\"');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "State & useState",
+  "description": "## State & useState\n\n**State** is data that changes over time. When state changes, React **re-renders** the component to reflect the new data.\n\n### How useState Works\n```jsx\nconst [count, setCount] = useState(0);\n//     ^          ^                ^\n//   value    setter fn     initial value\n```\n\n- `useState` returns an array: `[currentValue, setterFunction]`\n- Calling the setter triggers a re-render\n- **Never** modify state directly — always use the setter\n\n### Your Task\nBuild a counter component:\n1. Initialize a `count` state to **0** using `useState`\n2. Display the count in an `<h2>` with id **\"count\"**\n3. Add an **Increment** button (id: `\"increment\"`) that increases count by 1\n4. Add a **Decrement** button (id: `\"decrement\"`) that decreases count by 1\n5. Add a **Reset** button (id: `\"reset\"`) that sets count back to 0\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "usestate-hook",
+    "state-updates",
+    "re-rendering",
+    "immutability"
+  ],
+  "total_tests": 4,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  // Add your state here\n\n  return (\n    <div>\n      <h2 id=\"count\">Count: {/* display count */}</h2>\n      {/* Add your buttons */}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('State & useState', () => {\n  test('Displays initial count of 0', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#count');\nif (!el) throw new Error('No element with id \"count\" found');\nif (!el.textContent.includes('0')) throw new Error('Initial count should be 0');\n  });\n\n  test('Increment button increases count by 1', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#increment');\nif (!btn) throw new Error('No button with id \"increment\" found');\nconst before = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [0])[0]);\nbtn.click();\nawait tick();\nconst after = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [0])[0]);\nif (after !== before + 1) throw new Error('Count should increase by 1 after clicking Increment (was ' + before + ', now ' + after + ')');\n  });\n\n  test('Decrement button decreases count by 1', async () => {\n    const { container: root } = render(<App />);\n    const btn = root.querySelector('#decrement');\nif (!btn) throw new Error('No button with id \"decrement\" found');\nconst before = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [0])[0]);\nbtn.click();\nawait tick();\nconst after = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [0])[0]);\nif (after !== before - 1) throw new Error('Count should decrease by 1 after clicking Decrement (was ' + before + ', now ' + after + ')');\n  });\n\n  test('Reset button sets count to 0', async () => {\n    const { container: root } = render(<App />);\n    const reset = root.querySelector('#reset');\nif (!reset) throw new Error('No button with id \"reset\" found');\nconst inc = root.querySelector('#increment');\nif (inc) { inc.click(); await tick(); inc.click(); await tick(); }\nreset.click();\nawait tick();\nconst after = Number((root.querySelector('#count').textContent.match(/-?\\d+/) || [NaN])[0]);\nif (after !== 0) throw new Error('Count should be 0 after clicking Reset (was ' + after + ')');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

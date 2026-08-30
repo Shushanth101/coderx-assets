@@ -1,0 +1,30 @@
+{
+  "title": "The Read-Only Input",
+  "description": "## Fix the Bug: The Read-Only Input\n\nThe input is controlled — its `value` is bound to React state. But the field rejects every keystroke. Why?\n\n### Symptoms\n- Typing into `#name` does nothing\n- The display below the input never updates\n\n### Your Task\nMake typing work and see the display update live.\n\n> **Think about it:** when you set `value={something}` on an input, React owns its content on every render. If state never moves, neither does the input. What’s the contract you owe React when you make an input controlled?\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "controlled-inputs",
+    "value-vs-defaultvalue",
+    "onchange"
+  ],
+  "total_tests": 2,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [name, setName] = useState('');\n\n  return (\n    <div>\n      <input id=\"name\" value={name} placeholder=\"Type your name\" />\n      <p id=\"display\">Hello, {name || '...'}!</p>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Read-Only Input', () => {\n  test('Typing updates the input value', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#name');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(input, 'Aanya');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nif (input.value !== 'Aanya')\n  throw new Error('Input did not accept typed value — likely missing onChange');\n  });\n\n  test('The display reflects what the user typed', async () => {\n    const { container: root } = render(<App />);\n    const display = root.querySelector('#display');\nif (!display.textContent.includes('Aanya'))\n  throw new Error('#display should show \"Aanya\" — state never updated');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

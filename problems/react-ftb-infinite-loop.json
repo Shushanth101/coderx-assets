@@ -1,0 +1,29 @@
+{
+  "title": "The Infinite Loop",
+  "description": "## Fix the Bug: The Infinite Loop\n\nThis component is supposed to fetch a greeting message and display it. But as soon as it mounts, the browser freezes with a **\"Too many re-renders\"** error.\n\n### Symptoms\n- Browser tab becomes unresponsive\n- Console shows: \"Too many re-renders. React limits the number of renders to prevent an infinite loop.\"\n- Component never displays properly\n\n### Your Task\nFix the code so that:\n- The message is set **only once** when the component mounts\n- No infinite re-render loop occurs\n- The greeting displays correctly\n\n> **Think about it:** What happens when you call setState during every render?\n  ",
+  "difficulty": "easy",
+  "tags": [
+    "react",
+    "useeffect",
+    "dependency-array"
+  ],
+  "total_tests": 3,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [message, setMessage] = useState('');\n\n  useEffect(() => {\n    setMessage('Hello from React!');\n  });\n\n  return (\n    <div>\n      <h2 id=\"greeting\">{message}</h2>\n      <p id=\"status\">Loaded successfully</p>\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Infinite Loop', () => {\n  test('Component renders without crashing', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#greeting');\nif (!el) throw new Error('Component did not render — likely crashed');\n  });\n\n  test('Displays the greeting message', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#greeting');\nif (!el.textContent.includes('Hello from React!'))\n  throw new Error('Should display \"Hello from React!\"');\n  });\n\n  test('Shows \"Loaded successfully\"', async () => {\n    const { container: root } = render(<App />);\n    const el = root.querySelector('#status');\nif (!el) throw new Error('No #status element');\nif (!el.textContent.includes('Loaded successfully'))\n  throw new Error('Should show \"Loaded successfully\"');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

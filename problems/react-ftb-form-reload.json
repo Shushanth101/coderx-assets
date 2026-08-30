@@ -1,0 +1,30 @@
+{
+  "title": "The Page Reload",
+  "description": "## Fix the Bug: The Page Reload\n\nThe form has a submit handler that should display a greeting. Instead, hitting Submit causes the page to reload (you’ll see the iframe flicker), state resets, and the greeting never appears.\n\n### Symptoms\n- Click Submit — page reloads\n- The `#result` greeting never sticks\n- Inputs lose their value\n\n### Your Task\nMake Submit display the greeting **without** reloading the page.\n\n> **Think about it:** HTML forms have a default browser behavior — they submit to the server and navigate away. React doesn’t override that for you. Which method on the event object cancels the default action?\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "form-submit",
+    "event-default-behavior",
+    "synthetic-events"
+  ],
+  "total_tests": 2,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\nfunction App() {\n  const [name, setName] = useState('');\n  const [greeting, setGreeting] = useState('');\n\n  const handleSubmit = () => {\n    setGreeting('Hello, ' + name + '!');\n  };\n\n  return (\n    <form onSubmit={handleSubmit}>\n      <input\n        id=\"name\"\n        value={name}\n        onChange={(e) => setName(e.target.value)}\n        placeholder=\"Your name\"\n      />\n      <button type=\"submit\" id=\"submit\">Submit</button>\n      {greeting && <p id=\"result\">{greeting}</p>}\n    </form>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('The Page Reload', () => {\n  test('onSubmit calls preventDefault', async () => {\n    const { container: root } = render(<App />);\n    const form = root.querySelector('form');\nif (!form) throw new Error('No <form> found');\nconst ev = new Event('submit', { cancelable: true, bubbles: true });\nform.dispatchEvent(ev);\nawait tick();\nif (!ev.defaultPrevented)\n  throw new Error('Submit handler must call e.preventDefault() to stop the page reload');\n  });\n\n  test('Greeting appears after submit', async () => {\n    const { container: root } = render(<App />);\n    const input = root.querySelector('#name');\nconst setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\nsetter.call(input, 'Aanya');\ninput.dispatchEvent(new Event('input', { bubbles: true }));\nawait tick();\nconst form = root.querySelector('form');\nconst ev = new Event('submit', { cancelable: true, bubbles: true });\nform.dispatchEvent(ev);\nawait tick();\nconst result = root.querySelector('#result');\nif (!result) throw new Error('Expected #result after submit');\nif (!result.textContent.includes('Hello, Aanya'))\n  throw new Error('Greeting should include \"Hello, Aanya\"');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "title": "Component Composition",
+  "description": "## Component Composition\n\nReact favors **composition over inheritance**. The `children` prop lets you nest content inside components.\n\n### The children Pattern\n```jsx\nfunction Card({ children, title }) {\n  return (\n    <div className=\"card\">\n      <h3>{title}</h3>\n      <div className=\"card-body\">{children}</div>\n    </div>\n  );\n}\n\n// Usage\n<Card title=\"Profile\">\n  <p>This is the card content!</p>\n</Card>\n```\n\n### Your Task\n1. Create a `Card` component that:\n   - Accepts `title` (string) and `children` props\n   - Renders a wrapper `<div className=\"card\">`\n   - Shows the title in `<div className=\"card-header\">`\n   - Renders children inside `<div className=\"card-body\">`\n\n2. Create an `Alert` component that:\n   - Accepts `type` prop (\"info\", \"success\", \"warning\") and `children`\n   - Renders `<div className=\"alert alert-{type}\">`\n   - Renders children inside\n\n3. In `App`, compose them:\n   - A `Card` with title **\"Notifications\"** containing:\n     - An `Alert` of type **\"success\"** with text **\"Task completed!\"**\n     - An `Alert` of type **\"warning\"** with text **\"Low disk space\"**\n  ",
+  "difficulty": "medium",
+  "tags": [
+    "react",
+    "children-prop",
+    "composition-vs-inheritance",
+    "compound-components"
+  ],
+  "total_tests": 5,
+  "stack_type": "react",
+  "files": {
+    "src/App.jsx": {
+      "contents": "import React, { useState, useEffect, useRef, useMemo, useCallback, useReducer, createContext, useContext, Component } from 'react';\n\n// Create Card component here\n\n\n// Create Alert component here\n\n\nfunction App() {\n  return (\n    <div>\n      {/* Compose Card and Alert here */}\n    </div>\n  );\n}\n\nexport default App;\n",
+      "readOnly": false,
+      "hidden": false
+    },
+    "src/main.jsx": {
+      "contents": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nReactDOM.createRoot(document.getElementById('root')).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n",
+      "readOnly": true,
+      "hidden": false
+    },
+    "tests/App.test.jsx": {
+      "contents": "import { describe, test, expect } from 'vitest';\nimport { render, fireEvent, waitFor } from '@testing-library/react';\nimport '@testing-library/jest-dom';\nimport React from 'react';\nimport App from '../src/App';\n\nconst tick = (ms = 20) => new Promise((resolve) => setTimeout(resolve, ms));\n\ndescribe('Component Composition', () => {\n  test('Card component renders with className \"card\"', async () => {\n    const { container: root } = render(<App />);\n    const card = root.querySelector('.card');\nif (!card) throw new Error('No element with class \"card\" found');\n  });\n\n  test('Card has header with title \"Notifications\"', async () => {\n    const { container: root } = render(<App />);\n    const header = root.querySelector('.card-header');\nif (!header) throw new Error('No .card-header found');\nif (!header.textContent.includes('Notifications'))\n  throw new Error('Card header should contain \"Notifications\"');\n  });\n\n  test('Card has a body section', async () => {\n    const { container: root } = render(<App />);\n    const body = root.querySelector('.card-body');\nif (!body) throw new Error('No .card-body found');\n  });\n\n  test('Two Alert components rendered inside Card', async () => {\n    const { container: root } = render(<App />);\n    const body = root.querySelector('.card-body');\nconst alerts = body.querySelectorAll('.alert');\nif (alerts.length !== 2) throw new Error('Expected 2 alerts inside card body, found ' + alerts.length);\n  });\n\n  test('Alerts have correct type classes', async () => {\n    const { container: root } = render(<App />);\n    const success = root.querySelector('.alert-success');\nif (!success) throw new Error('No .alert-success found');\nif (!success.textContent.includes('Task completed!'))\n  throw new Error('Success alert should contain \"Task completed!\"');\nconst warning = root.querySelector('.alert-warning');\nif (!warning) throw new Error('No .alert-warning found');\nif (!warning.textContent.includes('Low disk space'))\n  throw new Error('Warning alert should contain \"Low disk space\"');\n  });\n});\n",
+      "readOnly": true,
+      "hidden": false
+    }
+  }
+}
