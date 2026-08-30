@@ -69,8 +69,8 @@ CoderX mounts client-side WebContainer virtual filesystems using pre-packaged `.
 
 | `stack_type` | Binary Archive Asset | Target Ecosystem | Available Pre-installed Packages |
 | :--- | :--- | :--- | :--- |
-| **`react`** | `react-base-env.bin` | Frontend React SPA | `react`, `react-dom`, `vitest`, `@testing-library/react`, `lucide-react`, `framer-motion`, `tailwindcss` |
-| **`express`** | `express-base-env.bin` | Node.js Backend API | `express`, `cors`, `vitest`, `supertest` |
+| **`react`** | `react-base-env.bin` | Frontend React SPA | `react`, `react-dom`, `react-router`, `vitest`, `@testing-library/react` |
+| **`express`** | `express-base-env.bin` | Node.js Backend API | `express`, `cors`, `jest`, `supertest`, `nodemon`, `multer`, `jsonwebtoken` |
 | **`react-express`** | `react-express-base-env.bin` | Full MERN Stack | Combined React frontend + Express backend dependencies |
 
 ---
